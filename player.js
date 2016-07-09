@@ -1,6 +1,6 @@
 module.exports = {
 
-    VERSION: "0.0.11",
+    VERSION: "0.0.12",
 
     bet_request: function (game_state, bet) {
         var myBet        = 0,
@@ -64,18 +64,12 @@ module.exports = {
                 decision = this.ACTIONS.CALL;
             }
 
-            if (decision == this.ACTIONS.FOLD && callBet < 50) {
+            if (decision == this.ACTIONS.FOLD && callBet < 30) {
                 decision = this.ACTIONS.CALL;
             }
 
-
-            if (callBet > 400) {
-                decision = this.ACTIONS.FOLD;
-            }
-
-
-            if (card1.rank === card2.rank && this.HIGH_RANKS.indexOf(card1.rank)) {
-                decision = this.ACTIONS.CALL;
+            if (card1.rank === card2.rank && this.VERY_HIGH_RANKS.indexOf(card1.rank)) {
+                decision = this.ACTIONS.RAISE;
             }
         }
 
@@ -446,6 +440,8 @@ module.exports = {
     ALL_RANKS: ["A", "2", "3", "4", "5", "6", "7", "8", "9", "10", "J", "Q", "K"],
 
     HIGH_RANKS: ["A", "10", "J", "Q", "K"],
+    
+    VERY_HIGH_RANKS: ["A", "Q", "K"],
 
     // SUITS: ['spades', 'diamonds', 'hearts', 'clubs']
 
