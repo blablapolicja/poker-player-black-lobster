@@ -1,6 +1,6 @@
 module.exports = {
 
-    VERSION: "0.0.13",
+    VERSION: "0.0.14",
 
     bet_request: function (game_state, bet) {
         var myBet        = 0,
@@ -13,7 +13,6 @@ module.exports = {
             allCards     = myCards.concat(tableCards),
             minimumRaise = game_state.minimum_raise,
             decision,
-            multiplier   = 1,
             callBet      = this.getRaiseAmount(currentBuyIn, myCurrentBet, minimumRaise),
             raiseBet     = this.getCallAmount(currentBuyIn, myCurrentBet);
 
@@ -35,7 +34,7 @@ module.exports = {
             } else if (this.checkIsPair(allCards)) {
                 decision = this.ACTIONS.CALL;
             } else {
-                decision = this.ACTIONS.FOLD;
+                decision = this.ACTIONS.CALL;
             }
         } else {
             //starting (no flop)
