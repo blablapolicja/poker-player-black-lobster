@@ -1,6 +1,6 @@
 module.exports = {
 
-    VERSION: "0.0.12",
+    VERSION: "0.0.13",
 
     bet_request: function (game_state, bet) {
         var myBet        = 0,
@@ -29,48 +29,17 @@ module.exports = {
             } else if (this.checkIsStreet(allCards)) {
                 decision = this.ACTIONS.RAISE;
             } else if (this.checkIsSet(allCards)) {
-                if (callBet < 200) {
-                    decision = this.ACTIONS.CALL;
-                } else {
-                    decision = this.ACTIONS.FOLD;
-                }
+                decision = this.ACTIONS.CALL;
             } else if (this.checkIsTwoPair(allCards)) {
-                if (callBet < 100) {
-                    decision = this.ACTIONS.CALL;
-                } else {
-                    decision = this.ACTIONS.FOLD;
-                }
+                decision = this.ACTIONS.CALL;
             } else if (this.checkIsPair(allCards)) {
-                if (callBet < 50) {
-                    decision = this.ACTIONS.CALL;
-                } else {
-                    decision = this.ACTIONS.FOLD;
-                }
+                decision = this.ACTIONS.CALL;
             } else {
                 decision = this.ACTIONS.FOLD;
             }
         } else {
             //starting (no flop)
-            var card1 = myCards[0],
-                card2 = myCards[1];
-
-            decision = this.ACTIONS.FOLD;
-
-            if (card1.rank === card2.rank) {
-                decision = this.ACTIONS.RAISE;
-            } else if (this.HIGH_RANKS.indexOf(card1.rank) > -1 && this.HIGH_RANKS.indexOf(card2.rank) > -1) {
-                decision = this.ACTIONS.RAISE;
-            } else if (card1.suit == card2.suit) {
-                decision = this.ACTIONS.CALL;
-            }
-
-            if (decision == this.ACTIONS.FOLD && callBet < 30) {
-                decision = this.ACTIONS.CALL;
-            }
-
-            if (card1.rank === card2.rank && this.VERY_HIGH_RANKS.indexOf(card1.rank)) {
-                decision = this.ACTIONS.RAISE;
-            }
+            decision = this.checkCombination(myCards);
         }
 
         if (decision == this.ACTIONS.RAISE) {
@@ -92,29 +61,16 @@ module.exports = {
         bet(myBet);
     },
 
-    // decisionMaker: function (game_state, myIndex, currentBuyIn, myCurrentBet, minimumRaise) {
-    //     var myBet = 0,
-    //         decision = this.checkCombination(game_state, myIndex);
-    //
-    //     if (decision == this.ACTIONS.RAISE) {
-    //         myBet = this.getRaiseAmount(currentBuyIn, myCurrentBet);
-    //     } else if (decision == this.ACTIONS.CALL) {
-    //         myBet = this.getCallAmount(currentBuyIn, myCurrentBet, minimumRaise);
-    //     }
-    //
-    //     return myBet;
-    // },
-
     checkCombination: function (myCards) {
-        var card1    = myCards[0],
-            card2    = myCards[1],
+        var card1 = myCards[0],
+            card2 = myCards[1],
             decision = this.ACTIONS.FOLD;
 
         if (card1.rank === card2.rank) {
             decision = this.ACTIONS.RAISE;
         } else if (this.HIGH_RANKS.indexOf(card1.rank) > -1 && this.HIGH_RANKS.indexOf(card2.rank) > -1) {
             decision = this.ACTIONS.RAISE;
-        } else if (card1.suit == card2.suit) {
+        } else if (this.VERY_HIGH_RANKS.indexOf(card1.rank) > -1 || this.VERY_HIGH_RANKS.indexOf(card2.rank) > -1) {
             decision = this.ACTIONS.CALL;
         }
 
@@ -122,19 +78,11 @@ module.exports = {
     },
 
     getCallAmount: function (currentBuyIn, myCurrentBet) {
-        var myBet = 0;
-
-        myBet = currentBuyIn - myCurrentBet;
-
-        return myBet;
+        return currentBuyIn - myCurrentBet;
     },
 
     getRaiseAmount: function (currentBuyIn, myCurrentBet, minimumRaise) {
-        var myBet = 0;
-
-        myBet = currentBuyIn - myCurrentBet + minimumRaise;
-
-        return myBet;
+        return currentBuyIn - myCurrentBet + minimumRaise;
     },
 
     checkIsFlash: function (incomingCards) {
@@ -169,6 +117,7 @@ module.exports = {
 
             }
         }
+
         return false;
     },
 
@@ -365,7 +314,6 @@ module.exports = {
 
 
         for (var i = 0; i < incomingCards.length; i++) {
-            console.log(incomingCards[i]);
             var incomingCardItem = incomingCards[i];
             if (incomingCardItem.suit == 'spades') {
                 spades++;
@@ -440,7 +388,7 @@ module.exports = {
     ALL_RANKS: ["A", "2", "3", "4", "5", "6", "7", "8", "9", "10", "J", "Q", "K"],
 
     HIGH_RANKS: ["A", "10", "J", "Q", "K"],
-    
+
     VERY_HIGH_RANKS: ["A", "Q", "K"],
 
     // SUITS: ['spades', 'diamonds', 'hearts', 'clubs']
