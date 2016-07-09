@@ -1,6 +1,6 @@
 module.exports = {
 
-    VERSION: "0.0.10",
+    VERSION: "0.0.11",
 
     bet_request: function (game_state, bet) {
         var myBet        = 0,
@@ -13,6 +13,7 @@ module.exports = {
             allCards     = myCards.concat(tableCards),
             minimumRaise = game_state.minimum_raise,
             decision,
+            multiplier   = 1,
             callBet      = this.getRaiseAmount(currentBuyIn, myCurrentBet, minimumRaise),
             raiseBet     = this.getCallAmount(currentBuyIn, myCurrentBet);
 
@@ -50,8 +51,8 @@ module.exports = {
             }
         } else {
             //starting (no flop)
-            var card1    = myCards[0],
-                card2    = myCards[1];
+            var card1 = myCards[0],
+                card2 = myCards[1];
 
             decision = this.ACTIONS.FOLD;
 
@@ -83,7 +84,7 @@ module.exports = {
         } else if (decision == this.ACTIONS.CALL) {
             myBet = raiseBet;
         } else if (decision == this.ACTIONS.ALL_IN) {
-            myBet = myStack;
+            myBet = Math.round(myStack / 3);
         }
 
         console.log('======================================================================');
@@ -397,7 +398,7 @@ module.exports = {
                 for (var z = 0; z < arrRanks.length; z++) {
                     street[arrRanks[z]] = 0;
                 }
-                
+
                 for (var y = 0; y < incomingCards.length; y++) {
 
                     var incomingCard = incomingCards[y];
