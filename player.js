@@ -17,6 +17,7 @@ module.exports = {
         console.log(myCards);
         console.log(tableCards);
         console.log(allCards);
+        console.log(myStack);
 
         if (tableCards.length) {
             myBet = currentBuyIn - myCurrentBet;
