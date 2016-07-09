@@ -1,6 +1,6 @@
 module.exports = {
 
-    VERSION: "0.0.7",
+    VERSION: "0.0.8",
 
     bet_request: function (game_state, bet) {
         var myBet        = 0,
@@ -34,6 +34,7 @@ module.exports = {
             }
         } else {
             decision = this.checkCombination(myCards);
+            if (decision == this.ACTIONS.FOLD && callBet < 50) decision = this.ACTIONS.CALL;
         }
 
         if (decision == this.ACTIONS.RAISE) {
@@ -44,11 +45,13 @@ module.exports = {
             myBet = myStack;
         }
 
+        console.log('======================================================================');
         console.log('my cards: ' + JSON.stringify(myCards));
         console.log('table cards: ' + JSON.stringify(tableCards));
         console.log('my stack: ' + myStack);
         console.log('decision: ' + decision);
         console.log('my bet: ' + myBet);
+        console.log('======================================================================');
 
         bet(myBet);
     },
