@@ -1,6 +1,6 @@
 module.exports = {
 
-    VERSION: "0.0.6",
+    VERSION: "0.0.7",
 
     bet_request: function (game_state, bet) {
         var myBet        = 0,
@@ -12,16 +12,11 @@ module.exports = {
             tableCards   = game_state.community_cards,
             allCards     = myCards.concat(tableCards),
             minimumRaise = game_state.minimum_raise,
-            decision;
-
-        console.log(myCards);
-        console.log(tableCards);
-        console.log(allCards);
-        console.log(myStack);
+            decision,
+            callBet      = this.getRaiseAmount(currentBuyIn, myCurrentBet, minimumRaise),
+            raiseBet     = this.getCallAmount(currentBuyIn, myCurrentBet);
 
         if (tableCards.length) {
-            myBet = currentBuyIn - myCurrentBet;
-
             if (this.checkIsCare(allCards)) {
                 decision = this.ACTIONS.ALL_IN;
             } else if (this.checkIsFlash(allCards)) {
@@ -29,24 +24,31 @@ module.exports = {
             } else if (this.checkIsSet(allCards)) {
                 decision = this.ACTIONS.RAISE;
             } else if (this.checkIsPair(allCards)) {
-                decision = this.ACTIONS.RAISE;
+                if (callBet < 50) {
+                    decision = this.ACTIONS.CALL;
+                } else {
+                    decision = this.ACTIONS.FOLD;
+                }
             } else {
-                decision = this.ACTIONS.CALL;
+                decision = this.ACTIONS.FOLD;
             }
         } else {
             decision = this.checkCombination(myCards);
         }
 
         if (decision == this.ACTIONS.RAISE) {
-            myBet = this.getRaiseAmount(currentBuyIn, myCurrentBet, minimumRaise);
+            myBet = callBet;
         } else if (decision == this.ACTIONS.CALL) {
-            myBet = this.getCallAmount(currentBuyIn, myCurrentBet);
+            myBet = raiseBet;
         } else if (decision == this.ACTIONS.ALL_IN) {
             myBet = myStack;
         }
 
-        console.log(decision);
-        console.log(myBet);
+        console.log('my cards: ' + JSON.stringify(myCards));
+        console.log('table cards: ' + JSON.stringify(tableCards));
+        console.log('my stack: ' + myStack);
+        console.log('decision: ' + decision);
+        console.log('my bet: ' + myBet);
 
         bet(myBet);
     },
