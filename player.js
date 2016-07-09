@@ -1,6 +1,6 @@
 module.exports = {
 
-    VERSION: "0.0.9",
+    VERSION: "0.0.10",
 
     bet_request: function (game_state, bet) {
         var myBet        = 0,
