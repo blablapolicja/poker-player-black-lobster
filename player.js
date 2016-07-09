@@ -1,20 +1,22 @@
 module.exports = {
 
-    VERSION: "1.0.0",
+    VERSION: "1.1.0",
 
     bet_request: function (game_state, bet) {
-        var myBet        = 0,
-            myIndex      = game_state.in_action,
-            currentBuyIn = game_state.current_buy_in,
-            myCurrentBet = game_state.players[myIndex].bet,
-            myCards      = game_state.players[myIndex].hole_cards,
-            myStack      = game_state.players[myIndex].stack,
-            tableCards   = game_state.community_cards,
-            allCards     = myCards.concat(tableCards),
-            minimumRaise = game_state.minimum_raise,
+        var myBet         = 0,
+            myIndex       = game_state.in_action,
+            currentBuyIn  = game_state.current_buy_in,
+            myCurrentBet  = game_state.players[myIndex].bet,
+            myCards       = game_state.players[myIndex].hole_cards,
+            myStack       = game_state.players[myIndex].stack,
+            tableCards    = game_state.community_cards,
+            players       = game_state.players,
+            activePlayers = this.getActivePlayers(players),
+            allCards      = myCards.concat(tableCards),
+            minimumRaise  = game_state.minimum_raise,
             decision,
-            raiseBet     = this.getRaiseAmount(currentBuyIn, myCurrentBet, minimumRaise),
-            callBet      = this.getCallAmount(currentBuyIn, myCurrentBet);
+            raiseBet      = this.getRaiseAmount(currentBuyIn, myCurrentBet, minimumRaise),
+            callBet       = this.getCallAmount(currentBuyIn, myCurrentBet);
 
         if (tableCards.length) {
             if (this.checkIsStreetFlash(allCards)) {
@@ -38,7 +40,7 @@ module.exports = {
             }
         } else {
             //starting (no flop)
-            decision = this.checkCombination(myCards);
+            decision = this.checkCombination(myCards, activePlayers);
         }
 
         if (decision == this.ACTIONS.RAISE) {
@@ -61,18 +63,34 @@ module.exports = {
         bet(myBet);
     },
 
-    checkCombination: function (myCards) {
+    checkCombination: function (myCards, activePlayers) {
         var card1    = myCards[0],
             card2    = myCards[1],
             decision = this.ACTIONS.FOLD;
+        
+        if (activePlayers.length <= 3) {
+            if (card1.rank === card2.rank) {
+                decision = this.ACTIONS.RAISE;
+            } else if (this.HIGH_RANKS.indexOf(card1.rank) > -1 && this.HIGH_RANKS.indexOf(card2.rank) > -1) {
+                decision = this.ACTIONS.RAISE;
+            }
+        } else {
+            if (card1.rank === card2.rank) {
+                decision = this.ACTIONS.RAISE;
+            }
+        }
+        
+        return decision;
+    },
 
-        if (card1.rank === card2.rank) {
-            decision = this.ACTIONS.RAISE;
-        } else if (this.HIGH_RANKS.indexOf(card1.rank) > -1 && this.HIGH_RANKS.indexOf(card2.rank) > -1) {
-            decision = this.ACTIONS.RAISE;
+    getActivePlayers: function (players) {
+        var active = [];
+
+        for (var i = 0; i < players.length; i++) {
+            if (players[i].status == 'active') active.push(players[i]);
         }
 
-        return decision;
+        return active;
     },
 
     getCallAmount: function (currentBuyIn, myCurrentBet) {
