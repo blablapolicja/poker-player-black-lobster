@@ -38,9 +38,9 @@ module.exports = {
         }
 
         if (decision == this.ACTIONS.RAISE) {
-            myBet = this.getRaiseAmount(currentBuyIn, myCurrentBet);
+            myBet = this.getRaiseAmount(currentBuyIn, myCurrentBet, minimumRaise);
         } else if (decision == this.ACTIONS.CALL) {
-            myBet = this.getCallAmount(currentBuyIn, myCurrentBet, minimumRaise);
+            myBet = this.getCallAmount(currentBuyIn, myCurrentBet);
         } else if (decision == this.ACTIONS.ALL_IN) {
             myBet = myStack;
         }
