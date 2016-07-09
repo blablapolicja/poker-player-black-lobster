@@ -3,19 +3,22 @@ module.exports = {
     VERSION: "0.0.2",
 
     bet_request: function (game_state, bet) {
-        var myBet   = 0,
-            myIndex = game_state.in_action,
+        var myBet        = 0,
+            myIndex      = game_state.in_action,
+            currentBuyIn = game_state.current_buy_in,
+            myCurrentBet = game_state.players[myIndex].bet,
+            minimumRaise = game_state.minimum_raise,
             decision;
-        
+
         if (game_state.community_cards.length) {
             myBet = game_state.current_buy_in - game_state.players[myIndex].bet;
-        }  else {
+        } else {
             decision = this.checkCombination(game_state, myIndex);
 
             if (decision == this.ACTIONS.RAISE) {
-                myBet = this.getRaiseAmount(game_state, myIndex);
+                myBet = this.getRaiseAmount(currentBuyIn, myCurrentBet);
             } else if (decision == this.ACTIONS.CALL) {
-                myBet = this.getCallAmount(game_state, myIndex);
+                myBet = this.getCallAmount(currentBuyIn, myCurrentBet, minimumRaise);
             }
         }
 
@@ -39,18 +42,18 @@ module.exports = {
         return decision;
     },
 
-    getCallAmount: function (game_state, myIndex) {
-        var myBet   = 0;
+    getCallAmount: function (currentBuyIn, myCurrentBet) {
+        var myBet = 0;
 
-        myBet = game_state.current_buy_in - game_state.players[myIndex].bet;
+        myBet = currentBuyIn - myCurrentBet;
 
         return myBet;
     },
 
-    getRaiseAmount: function (game_state, myIndex) {
-        var myBet   = 0;
+    getRaiseAmount: function (currentBuyIn, myCurrentBet, minimumRaise) {
+        var myBet = 0;
 
-        myBet = game_state.current_buy_in - game_state.players[myIndex].bet + game_state.minimum_raise;
+        myBet = currentBuyIn - myCurrentBet + minimumRaise;
 
         return myBet;
     },
