@@ -1,6 +1,6 @@
 module.exports = {
 
-    VERSION: "0.0.15",
+    VERSION: "1.0.0",
 
     bet_request: function (game_state, bet) {
         var myBet        = 0,
@@ -13,8 +13,8 @@ module.exports = {
             allCards     = myCards.concat(tableCards),
             minimumRaise = game_state.minimum_raise,
             decision,
-            callBet      = this.getRaiseAmount(currentBuyIn, myCurrentBet, minimumRaise),
-            raiseBet     = this.getCallAmount(currentBuyIn, myCurrentBet);
+            raiseBet     = this.getRaiseAmount(currentBuyIn, myCurrentBet, minimumRaise),
+            callBet      = this.getCallAmount(currentBuyIn, myCurrentBet);
 
         if (tableCards.length) {
             if (this.checkIsStreetFlash(allCards)) {
@@ -24,11 +24,11 @@ module.exports = {
             } else if (this.checkIsFullHouse(allCards)) {
                 decision = this.ACTIONS.ALL_IN;
             } else if (this.checkIsFlash(allCards)) {
-                decision = this.ACTIONS.RAISE;
+                decision = this.ACTIONS.ALL_IN;
             } else if (this.checkIsStreet(allCards)) {
                 decision = this.ACTIONS.RAISE;
             } else if (this.checkIsSet(allCards)) {
-                decision = this.ACTIONS.CALL;
+                decision = this.ACTIONS.RAISE;
             } else if (this.checkIsTwoPair(allCards)) {
                 decision = this.ACTIONS.CALL;
             } else if (this.checkIsPair(allCards)) {
@@ -42,11 +42,12 @@ module.exports = {
         }
 
         if (decision == this.ACTIONS.RAISE) {
-            myBet = callBet;
-        } else if (decision == this.ACTIONS.CALL) {
             myBet = raiseBet;
+        } else if (decision == this.ACTIONS.CALL) {
+            myBet = callBet;
         } else if (decision == this.ACTIONS.ALL_IN) {
-            myBet = Math.round(myStack / 3);
+            myBet = Math.round(myStack / 2);
+            if (myBet < minimumRaise) myBet = myStack;
         }
 
         console.log('======================================================================');
@@ -61,16 +62,14 @@ module.exports = {
     },
 
     checkCombination: function (myCards) {
-        var card1 = myCards[0],
-            card2 = myCards[1],
+        var card1    = myCards[0],
+            card2    = myCards[1],
             decision = this.ACTIONS.FOLD;
 
         if (card1.rank === card2.rank) {
             decision = this.ACTIONS.RAISE;
         } else if (this.HIGH_RANKS.indexOf(card1.rank) > -1 && this.HIGH_RANKS.indexOf(card2.rank) > -1) {
             decision = this.ACTIONS.RAISE;
-        } else if (this.VERY_HIGH_RANKS.indexOf(card1.rank) > -1 || this.VERY_HIGH_RANKS.indexOf(card2.rank) > -1) {
-            decision = this.ACTIONS.CALL;
         }
 
         return decision;
