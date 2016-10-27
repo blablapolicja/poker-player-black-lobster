@@ -18,6 +18,8 @@ module.exports = {
             raiseBet      = this.getRaiseAmount(currentBuyIn, myCurrentBet, minimumRaise),
             callBet       = this.getCallAmount(currentBuyIn, myCurrentBet);
 
+        console.log('dwjoedw');
+        console.log('sdfsds');
         if (tableCards.length) {
             if (this.checkIsStreetFlash(allCards)) {
                 decision = this.ACTIONS.ALL_IN;
@@ -67,7 +69,7 @@ module.exports = {
         var card1    = myCards[0],
             card2    = myCards[1],
             decision = this.ACTIONS.FOLD;
-        
+
         if (activePlayers.length <= 3) {
             if (card1.rank === card2.rank) {
                 decision = this.ACTIONS.RAISE;
@@ -79,7 +81,7 @@ module.exports = {
                 decision = this.ACTIONS.RAISE;
             }
         }
-        
+
         return decision;
     },
 
