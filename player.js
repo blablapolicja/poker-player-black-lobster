@@ -20,6 +20,7 @@ module.exports = {
 
         console.log('dwjoedw');
         console.log('sdfsds');
+        console.log('s');
         if (tableCards.length) {
             if (this.checkIsStreetFlash(allCards)) {
                 decision = this.ACTIONS.ALL_IN;
